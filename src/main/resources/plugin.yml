@@ -1,0 +1,7 @@
+name: CVCombatLog
+main: org.cubeville.cvcombatlog.CVCombatLog
+author: ToeMan_
+version: 1.20
+api-version: 1.16
+depend: [Citizens,OfflineManager]
+
