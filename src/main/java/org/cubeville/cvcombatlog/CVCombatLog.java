@@ -7,11 +7,11 @@ import net.citizensnpcs.api.npc.NPCRegistry;
 import net.citizensnpcs.trait.SkinTrait;
 import net.quazar.offlinemanager.api.OfflineManagerAPI;
 import net.quazar.offlinemanager.api.data.entity.IPlayerData;
-import net.quazar.offlinemanager.api.enums.SavePlayerType;
 import net.quazar.offlinemanager.api.inventory.AbstractPlayerInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -46,6 +46,8 @@ public class CVCombatLog extends JavaPlugin implements Listener {
     private OfflineManagerAPI offlineManagerAPI;
 
     private Integer combatTimer;
+    private Location spawnLocation;
+
     private Map<UUID, Integer> inCombat;
     private Map<UUID, BukkitTask> playerTasks;
     private Map<Integer, BossBar> bossbars;
@@ -68,6 +70,7 @@ public class CVCombatLog extends JavaPlugin implements Listener {
             mainConfig.load(configFile);
 
             combatTimer = mainConfig.getInt("combat-timer");
+            spawnLocation = mainConfig.getLocation("spawn-location");
         } catch(IOException | InvalidConfigurationException e) {
             logger.log(Level.WARNING, ChatColor.RED + "Unable to load config file", e);
             throw new RuntimeException(ChatColor.RED + "Unable to load config file", e);
@@ -182,6 +185,7 @@ public class CVCombatLog extends JavaPlugin implements Listener {
             if(pUUID == null) return;
             exitCombatNPC(pUUID);
 
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(pUUID);
             IPlayerData playerData = offlineManagerAPI.getPlayerData(pUUID);
             AbstractPlayerInventory inv = playerData.getInventory();
             Integer exp = playerData.getExpLevel() * 7;
@@ -191,9 +195,11 @@ public class CVCombatLog extends JavaPlugin implements Listener {
             e.getEntity().getWorld().spawn(e.getEntity().getLocation(), ExperienceOrb.class).setExperience(exp); //drop players xp for killer
 
             playerData.getInventory().clear(); //remove players inventory
-            //playerData.save(SavePlayerType.INVENTORY);
             playerData.setExp(0F); //remove players xp
-            playerData.setExpLevel(0);
+            playerData.setExpLevel(0); //remove players xp
+            playerData.setFoodLevel(20); //reset players food
+            playerData.setHealth(20F);
+            playerData.setLocation(offlinePlayer.getBedSpawnLocation() != null ? offlinePlayer.getBedSpawnLocation() : this.spawnLocation); //respawn player
             playerData.save();
 
         }
