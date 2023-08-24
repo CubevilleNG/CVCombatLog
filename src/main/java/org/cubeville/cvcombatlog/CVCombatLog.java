@@ -158,6 +158,7 @@ public class CVCombatLog extends JavaPlugin implements Listener {
             return;
         }
         if(e.getEntity() instanceof Player) {
+            if(source.equals(e.getEntity())) return;
             if(this.customRegistry.getNPC(e.getEntity()) == null) {
                 Player target = (Player) e.getEntity();
                 exitCombat(source);
@@ -198,7 +199,7 @@ public class CVCombatLog extends JavaPlugin implements Listener {
             playerData.setExp(0F); //remove players xp
             playerData.setExpLevel(0); //remove players xp
             playerData.setFoodLevel(20); //reset players food
-            playerData.setHealth(20F);
+            playerData.setHealth(20F); //reset players health
             playerData.setLocation(offlinePlayer.getBedSpawnLocation() != null ? offlinePlayer.getBedSpawnLocation() : this.spawnLocation); //respawn player
             playerData.save();
 
