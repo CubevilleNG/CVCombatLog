@@ -8,10 +8,7 @@ import net.citizensnpcs.trait.SkinTrait;
 import net.quazar.offlinemanager.api.OfflineManagerAPI;
 import net.quazar.offlinemanager.api.data.entity.IPlayerData;
 import net.quazar.offlinemanager.api.inventory.AbstractPlayerInventory;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -29,6 +26,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -204,6 +202,9 @@ public class CVCombatLog extends JavaPlugin implements Listener {
             playerData.save();
 
         }
+        if(e.getEntity().getKiller() != null) {
+            e.getEntity().getWorld().dropItem(e.getEntity().getLocation(), createPlayerHead(e.getEntity(), e.getEntity().getKiller()));
+        }
     }
 
     @EventHandler
@@ -223,6 +224,18 @@ public class CVCombatLog extends JavaPlugin implements Listener {
             exitCombat(player);
             startCombatTimer(player);
         }
+    }
+
+    public ItemStack createPlayerHead(Player player, Player killer) {
+        ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+        skullMeta.setOwningPlayer(player);
+        skullMeta.setDisplayName(ChatColor.GOLD + "Head of " + player.getName());
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "Slain by " + killer.getName());
+        skullMeta.setLore(lore);
+        skull.setItemMeta(skullMeta);
+        return skull;
     }
 
     public void enterCombat(Player player) {
