@@ -14,10 +14,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.ExperienceOrb;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -149,6 +146,24 @@ public class CVCombatLog extends JavaPlugin implements Listener {
         } else if(e.getDamager() instanceof Arrow) {
             if(((Arrow)e.getDamager()).getShooter() instanceof Player) {
                 source = (Player) ((Arrow) e.getDamager()).getShooter();
+            } else {
+                return;
+            }
+        } else if(e.getDamager() instanceof SpectralArrow) {
+            if(((SpectralArrow)e.getDamager()).getShooter() instanceof Player) {
+                source = (Player) ((SpectralArrow) e.getDamager()).getShooter();
+            } else {
+                return;
+            }
+        } else if(e.getDamager() instanceof Trident) {
+           if(((Trident)e.getDamager()).getShooter() instanceof Player) {
+               source = (Player) ((Trident) e.getDamager()).getShooter();
+           } else {
+               return;
+           }
+        } else if(e.getDamager() instanceof ThrownPotion) {
+            if(((ThrownPotion)e.getDamager()).getShooter() instanceof Player) {
+                source = (Player) ((ThrownPotion) e.getDamager()).getShooter();
             } else {
                 return;
             }
